@@ -800,8 +800,8 @@ def main() -> None:
     rough_best = {}
     for item in filtered:
         if item.content_type == "movie":
-            clean_title = re.sub(r"\(\d{4}\)", "", item.clean_title)
-            key = f"movie:{clean_title.strip().lower()}"
+            movie_title = re.sub(r"\(\d{4}\)", "", item.clean_title)
+            key = f"movie:{movie_title.strip().lower()}"
         else:
             show = re.sub(r"\bS\d{1,2}E\d{1,3}\b", "", item.clean_title, flags=re.I)
             show = re.sub(r"\b\d{1,2}x\d{1,3}\b", "", show, flags=re.I).strip().lower()
