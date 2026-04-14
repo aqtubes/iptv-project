@@ -10,7 +10,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 from concurrent.futures import ThreadPoolExecutor, as_completed
-
 import requests
 
 # ============================================================
@@ -417,11 +416,10 @@ TMDB_CACHE = load_tmdb_cache()
 
 def tmdb_search_movie(query: str, year: str) -> dict | None:
     clean_title = re.sub(r"\(\d{4}\)", "", query)
-clean_title = re.sub(r"\(\d{4}\)", "", item.clean_title)
-key = f"movie:{clean_title.strip().lower()}"
+    key = f"movie:{clean_title.strip().lower()}"
 
-if key in TMDB_CACHE:
-    return TMDB_CACHE[key]
+    if key in TMDB_CACHE:
+        return TMDB_CACHE[key]
 
     url = "https://api.themoviedb.org/3/search/movie"
     params = {"api_key": TMDB_API_KEY, "query": query}
@@ -802,7 +800,8 @@ def main() -> None:
     rough_best = {}
     for item in filtered:
         if item.content_type == "movie":
-            key = f"movie::{re.sub(r'\\(\\d{4}\\)', '', item.clean_title).strip().lower()}"
+            clean_title = re.sub(r"\(\d{4}\)", "", item.clean_title)
+            key = f"movie:{clean_title.strip().lower()}"
         else:
             show = re.sub(r"\bS\d{1,2}E\d{1,3}\b", "", item.clean_title, flags=re.I)
             show = re.sub(r"\b\d{1,2}x\d{1,3}\b", "", show, flags=re.I).strip().lower()
