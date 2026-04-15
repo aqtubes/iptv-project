@@ -947,34 +947,37 @@ def upload_all_to_drive(service, folder_id: str) -> None:
         ).execute()
         print(f"Uploaded: {f}")
 
+
 if __name__ == "__main__":
     main()
 
     # FORCE DRIVE UPLOAD
     import os
+    import json
     from googleapiclient.discovery import build
     from google.oauth2 import service_account
     from googleapiclient.http import MediaFileUpload
 
     creds_json = os.environ["DRIVE_SERVICE_ACCOUNT_JSON"]
-    import json
     creds_dict = json.loads(creds_json)
 
     creds = service_account.Credentials.from_service_account_info(
         creds_dict,
-        scopes=["https://www.googleapis.com/auth/drive"]
+        scopes=["https://www.googleapis.com/auth/drive"],
     )
 
     service = build("drive", "v3", credentials=creds)
-
     folder_id = os.environ["GDRIVE_FOLDER_ID"]
 
     for f in os.listdir("iptv_work"):
         path = os.path.join("iptv_work", f)
 
+        if not os.path.isfile(path):
+            continue
+
         file_metadata = {
             "name": f,
-            "parents": [folder_id]
+            "parents": [folder_id],
         }
 
         media = MediaFileUpload(path, resumable=True)
@@ -982,14 +985,7 @@ if __name__ == "__main__":
         service.files().create(
             body=file_metadata,
             media_body=media,
-            fields="id"
+            fields="id",
         ).execute()
 
         print(f"Uploaded: {f}")
-    except KeyboardInterrupt:
-        sys.exit("\nStopped by user.")
-    except Exception as exc:
-        sys.exit(f"\nError: {exc}")
-
-
-# TODO: call upload_all_to_drive(service, os.environ["GDRIVE_FOLDER_ID"]) after Drive service is created.
