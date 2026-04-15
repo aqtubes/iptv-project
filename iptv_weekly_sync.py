@@ -414,51 +414,11 @@ def load_tmdb_cache() -> dict:
 
 TMDB_CACHE = load_tmdb_cache()
 
-def tmdb_search_movie(query: str, year: str) -> dict | None:
-    clean_title = re.sub(r"\(\d{4}\)", "", query)
-    key = f"movie:{clean_title.strip().lower()}"
+def tmdb_search_movie(query: str, year: str):
+    return None
 
-    if key in TMDB_CACHE:
-        return TMDB_CACHE[key]
-
-    url = "https://api.themoviedb.org/3/search/movie"
-    params = {"api_key": TMDB_API_KEY, "query": query}
-    if year:
-        params["year"] = year
-
-    result = None
-    try:
-        res = requests_get(url, params=params)
-        res.raise_for_status()
-        items = res.json().get("results", [])
-        result = items[0] if items else None
-    except Exception:
-        result = None
-
-    TMDB_CACHE[key] = result
-    return result
-
-def tmdb_search_tv(query: str, year: str) -> dict | None:
-    key = f"tv::{query}::{year}"
-    if key in TMDB_CACHE:
-        return TMDB_CACHE[key]
-
-    url = "https://api.themoviedb.org/3/search/tv"
-    params = {"api_key": TMDB_API_KEY, "query": query}
-    if year:
-        params["first_air_date_year"] = year
-
-    result = None
-    try:
-        res = requests_get(url, params=params)
-        res.raise_for_status()
-        items = res.json().get("results", [])
-        result = items[0] if items else None
-    except Exception:
-        result = None
-
-    TMDB_CACHE[key] = result
-    return result
+def tmdb_search_tv(query: str, year: str):
+    return None
 
 def enrich_item(item: MediaItem) -> Optional[MediaItem]:
     title = item.clean_title
