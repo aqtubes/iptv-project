@@ -30,15 +30,15 @@ jobs:
           pip install requests google-api-python-client google-auth
 
       - name: Decode service account JSON
-  run: |
-    echo "$GDRIVE_SERVICE_ACCOUNT_JSON_B64" | base64 --decode > creds.json
-    echo "DRIVE_SERVICE_ACCOUNT_JSON<<EOF" >> $GITHUB_ENV
-    cat creds.json >> $GITHUB_ENV
-    echo "EOF" >> $GITHUB_ENV
-  env:
-    GDRIVE_SERVICE_ACCOUNT_JSON_B64: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_JSON_B64 }}
+        run: |
+          echo "$GDRIVE_SERVICE_ACCOUNT_JSON_B64" | base64 --decode > creds.json
+          echo "DRIVE_SERVICE_ACCOUNT_JSON<<EOF" >> "$GITHUB_ENV"
+          cat creds.json >> "$GITHUB_ENV"
+          echo "EOF" >> "$GITHUB_ENV"
+        env:
+          GDRIVE_SERVICE_ACCOUNT_JSON_B64: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_JSON_B64 }}
 
-- name: Run IPTV sync
+      - name: Run IPTV sync
         env:
           GDRIVE_SERVICE_ACCOUNT_JSON_B64: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_JSON_B64 }}
           GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
@@ -48,9 +48,6 @@ jobs:
       - name: Upload reports artifact
         uses: actions/upload-artifact@v4
         with:
-          name: iptv-report
-          path: |
-            iptv_work/report.json
-            iptv_work/bollywood_only.m3u
-
-# touch
+          name: iptv-weekly-report
+          path: iptv_work/
+          if-no-files-found: warn
