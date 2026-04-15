@@ -919,6 +919,34 @@ def main() -> None:
 def OUTPUT_ROOT_LOCAL_FALLBACK(relpath: str) -> Path:
     return WORK_DIR / "output" / relpath
 
+
+def upload_all_to_drive(service, folder_id: str) -> None:
+    from googleapiclient.http import MediaFileUpload
+    import os
+
+    workdir = "iptv_work"
+    if not os.path.isdir(workdir):
+        print(f"Drive upload skipped: {workdir} does not exist")
+        return
+
+    files = [f for f in os.listdir(workdir) if os.path.isfile(os.path.join(workdir, f))]
+    print("DEBUG FILES:", files)
+    print("FOLDER ID:", folder_id)
+
+    for f in files:
+        path = os.path.join(workdir, f)
+        file_metadata = {
+            "name": f,
+            "parents": [folder_id],
+        }
+        media = MediaFileUpload(path, resumable=True)
+        service.files().create(
+            body=file_metadata,
+            media_body=media,
+            fields="id"
+        ).execute()
+        print(f"Uploaded: {f}")
+
 if __name__ == "__main__":
     try:
         main()
@@ -926,3 +954,6 @@ if __name__ == "__main__":
         sys.exit("\nStopped by user.")
     except Exception as exc:
         sys.exit(f"\nError: {exc}")
+
+
+# TODO: call upload_all_to_drive(service, os.environ["GDRIVE_FOLDER_ID"]) after Drive service is created.
