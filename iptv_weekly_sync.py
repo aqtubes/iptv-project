@@ -948,20 +948,20 @@ def upload_all_to_drive(service, folder_id: str) -> None:
         print(f"Uploaded: {f}")
 
 
+
 if __name__ == "__main__":
     main()
 
     # FORCE DRIVE UPLOAD
     import os
     import json
+    import base64
     from googleapiclient.discovery import build
     from google.oauth2 import service_account
     from googleapiclient.http import MediaFileUpload
 
-    import base64
-
-creds_json_b64 = os.environ["GDRIVE_SERVICE_ACCOUNT_JSON_B64"]
-creds_json = base64.b64decode(creds_json_b64).decode()
+    creds_json_b64 = os.environ["GDRIVE_SERVICE_ACCOUNT_JSON_B64"]
+    creds_json = base64.b64decode(creds_json_b64).decode()
     creds_dict = json.loads(creds_json)
 
     creds = service_account.Credentials.from_service_account_info(
