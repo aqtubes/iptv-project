@@ -29,7 +29,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests google-api-python-client google-auth
 
-      - name: Run IPTV sync
+      - name: Decode service account JSON
+  run: |
+    echo "$GDRIVE_SERVICE_ACCOUNT_JSON_B64" | base64 --decode > creds.json
+    echo "DRIVE_SERVICE_ACCOUNT_JSON<<EOF" >> $GITHUB_ENV
+    cat creds.json >> $GITHUB_ENV
+    echo "EOF" >> $GITHUB_ENV
+  env:
+    GDRIVE_SERVICE_ACCOUNT_JSON_B64: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_JSON_B64 }}
+
+- name: Run IPTV sync
         env:
           GDRIVE_SERVICE_ACCOUNT_JSON_B64: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_JSON_B64 }}
           GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
